@@ -3,12 +3,12 @@ import '../index.css'
 
 function Header() {
     return (
-        <header className="App-header">
-            <div className="App-header">
+        <header>
+            <div className="bg-[#7E4181] w-full">
                 <nav>
-                    <div>
-                        <a href ="">
-                            <button className="App-logo"></button>
+                    <div className="">
+                        <a href="/">
+                            <button className="py-2 px-4 bg-[#7E4181] text-white rounded-md" id="login-button"> Login </button>
                         </a>
                     </div>
                 </nav>
