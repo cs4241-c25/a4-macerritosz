@@ -1,7 +1,8 @@
-import React, { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect } from 'react';
 
 const CredContext = createContext();
 
+// eslint-disable-next-line react/prop-types
 export const CredentialsProvider = ({children}) => {
     const [loggedIn, setLoggedIn] = useState(false);
     const [username, setUsername] = useState("");
@@ -12,7 +13,6 @@ export const CredentialsProvider = ({children}) => {
                 const response = await fetch('/profile');
                 if(response.ok) {
                     const data = await response.json();
-                    console.log(data);
                     setUsername(data.username);
                     setLoggedIn(true);
 

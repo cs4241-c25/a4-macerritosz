@@ -28,13 +28,13 @@ function Table(props) {
     };
     //trigger re render after editTarget is assigned
     useEffect(() => {
-        console.log("editTarget:", editTarget);
+        console.log("re-render with updated editTarget:", editTarget);
     }, [editTarget]);
 
     const handleModify = (id) => {
         //get the id from rows, open the modal
         const r = rows.find(row => row.flightID === id)
-        if (!r) return {}; // Ensure we don't return null or undefined
+        if (!r) return {}; // don't return null or undefined
         return r;
     }
     const getUpdatedFlight = updatedFlight => {
@@ -51,7 +51,7 @@ function Table(props) {
         if (row) { //check if the row hasnt been changed/error in indexing
             const daysUntilElement = row.querySelector('.daysUntil');
             if (daysUntilElement) {
-                daysUntilElement.textContent = daysUntil; // Update the text in the "daysUntil" column
+                daysUntilElement.textContent = daysUntil; // Update the text for days until
             }
         }
         setRows(prevRows => prevRows.map(row => row.flightID === updatedFlight.flightID ? updatedFlight : row));
@@ -126,7 +126,7 @@ function Table(props) {
                 </thead>
                 <tbody id="flightTable" >
                     {
-                        rows.length > 0 ? (rows.map((row) => (createRow(row)))) : console.log("Empty")
+                        rows.length > 0 ? (rows.map((row) => (createRow(row)))) : console.log("setRows is Empty")
                     }
                 </tbody>
             </table>
