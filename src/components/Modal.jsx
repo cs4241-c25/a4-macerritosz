@@ -10,13 +10,11 @@ function Modal(props) {
     From props should have the true value to show it, and also the id of the row to be modified
      */
     //static data from the table row
-    const [fillData, setFillData] = useState({});
     const [input, setInput] = useState({cityDepart: '', cityDest: '', departDate: '', returnDate: null});
     useEffect(() => {
         if (props.data) {
-            console.log(props.data);
-            setFillData(props.data);
             setInput({
+                ...props.data,
                 cityDepart: props.data.cityDepart || '',
                 cityDest: props.data.cityDest || '',
                 departDate: props.data.departDate || '',
@@ -30,47 +28,86 @@ function Modal(props) {
         setInput((prev) => ({...prev, [name]: value}));
     }
 
+    async function modifyData(event){
+        event.preventDefault();
+        console.log(input)
+
+        try {
+            const response = await fetch(`/modifyFlightData/` + props.target, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(input)
+            });
+
+            if (response.ok) {
+                const updatedFlight = await response.json();
+                console.log("Flight modified successfully");
+                //close modal and pass the data back to the Table with a function and call it
+                props.close()
+                props.getUpdatedFlight(updatedFlight); // Reload on screen data
+            } else {
+                console.error("Error modifying flight: " + response.status);
+            }
+        } catch (err) {
+            console.error("Request error:", err);
+        }
+    }
+
     return (
-        <div id="modifyModal" className={`modal fixed inset-0 bg-black bg-opacity-50 pt-16 
+        <div id="modifyModal" className={`modal fixed inset-0 bg-white/65 pt-16 
         ${props.showModal ? 'block' : 'hidden'} z-50`}>
-            <div className="modal-content bg-white m-10 p-5 border border-[#888] w-4/5 mx-auto">
-                <span className="close" id="closeModal" onClick={props.close}>X</span>
-                <h3>Modify Flight</h3>
-                <form id="modifyForm">
-                    <label htmlFor="modalCityDepart">
-                        Departure City:
-                    </label>
-                    <input type="text"
-                           id="modalCityDepart" name="cityDepart"
-                           onChange={handleChange}
-                           className="p-2 rounded-md border-2 border-[#7E4181]"
-                    />
-                    <label htmlFor="modalCityDest">
-                        Destination City:
-                    </label>
-                    <input type="text" id="modalCityDest" name="cityDest"
-                           onChange={handleChange}
-                           className="p-2 rounded-md border-2 border-[#7E4181]"
-                    />
+            <div className="modal-content bg-white m-10 p-5 border border-transparent w-4/5 mx-auto">
+                <span className="close cursor-pointer m-2" id="closeModal" onClick={props.close} >X</span>
+                <h3 className={"pt-1 pb-1"}>Modify Flight: </h3>
+                <form id="modifyForm" >
+                    <div className={"flex"}>
+                        <label htmlFor="modalCityDepart">
+                            Departure City: <input type="text"
+                                                   id="modalCityDepart" name="cityDepart"
+                                                   value={input.cityDepart}
+                                                   onChange={handleChange}
+                                                   className="p-2 rounded-md border-2 border-[#7E4181]"
+                        />
+                        </label>
+
+                        <label htmlFor="modalCityDest" className={"pl-2"}>
+                            Destination City: <input type="text" id="modalCityDest" name="cityDest"
+                                                     value={input.cityDest}
+                                                     onChange={handleChange}
+                                                     className="p-2 rounded-md border-2 border-[#7E4181]"
+                        />
+                        </label>
+
+                    </div>
                     <br/>
-                    <label htmlFor="modalDepartDate">
-                        Departure Date:
-                    </label>
-                    <input type="date" id="modalDepartDate" name="departDate"
-                           onChange={handleChange}
-                           className="p-2 rounded-md border-2 border-[#7E4181]"
-                    />
-                    <label id="modalReturnDateLabel" htmlFor="modalReturnDate">
-                        Return Date:
-                    </label>
-                    <input type="date" id="modalReturnDate" name="returnDate"
-                           onChange={handleChange}
-                           className="p-2 rounded-md border-2 border-[#7E4181]"
-                    />
+                    <div className={"flex"}>
+                        <label htmlFor="modalDepartDate" >
+                            Departure Date: <input type="date" id="modalDepartDate" name="departDate"
+                                                   value={input.departDate}
+                                                   onChange={handleChange}
+                                                   className="p-2 rounded-md border-2 border-[#7E4181]"
+                        />
+                        </label>
+
+                        <label id="modalReturnDateLabel" htmlFor="modalReturnDate" className={`pl-2 ${props.data.returnDate !== "" ? 'visible' : 'hidden'}`}>
+                            Return Date: <input type="date" id="modalReturnDate" name="returnDate"
+                                                value={input.returnDate}
+                                                onChange={handleChange}
+                                                className="p-2 rounded-md border-2 border-[#7E4181]"
+                        />
+                        </label>
+
+                    </div>
                     <br/>
-                    <button id="modalSubmit" type="submit" className="py-2 px-6 bg-[#7E4181] text-white rounded-md">Save
-                        Changes
-                    </button>
+                    <div>
+                        <button id="modalSubmit" type="submit" className="py-2 px-6 bg-[#7E4181] text-white rounded-md
+                         active:border-[#a16aa3] active:bg-[#a16aa3] cursor-pointer" onClick={modifyData}>
+                            Save Changes
+                        </button>
+                    </div>
+
                 </form>
             </div>
         </div>
@@ -81,6 +118,7 @@ Modal.propTypes = {
     close: PropTypes.func.isRequired,
     target: PropTypes.number.isRequired,
     data: PropTypes.object.isRequired,
+    getUpdatedFlight: PropTypes.func.isRequired
 };
 
 export default Modal;

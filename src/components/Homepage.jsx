@@ -6,14 +6,32 @@ import CredContext from "./CredentialsContext.jsx";
 
 function Homepage() {
     const {loggedIn, username} = useContext(CredContext)
+    const [flightData, setFlightData] = useState({flightType : "One-Way", names:[], cityDepart: '', cityDest: '', departDate: '', returnDate: ''})
+    const [responseData, setResponseData] = useState([]);
     /* Use state information to make sure that user is logged in, will change when user logs out */
     const navigate = useNavigate();
     //instead, use a get request to /profile to get the user
     useEffect(() => {
         if(loggedIn) {
-            navigate("/Home");
+            navigate('/');
         } else {
-            navigate("/");
+            navigate('/Login');
+        }
+    }, [loggedIn]);
+
+    useEffect( () => {
+        if(loggedIn) {
+            async function getSavedFlights() {
+                const response = await fetch('/getAllFlights')
+                if (!response.ok) {
+                    console.error('Failed to fetch flights');
+                    return;
+                }
+                const data = await response.json();
+                setResponseData(data)
+            }
+
+            getSavedFlights();
         }
     }, [loggedIn]);
     /*
@@ -57,8 +75,6 @@ function Homepage() {
     Handle Submit button
      */
 
-    const [flightData, setFlightData] = useState({flightType : "One-Way", names:[], cityDepart: '', cityDest: '', departDate: '', returnDate: ''})
-    const [responseData, setResponseData] = useState(null);
 
     const handleChange = (e, index) => {
         if(e.target.name === "passGroup") {
@@ -74,7 +90,7 @@ function Homepage() {
         const jsonStr = JSON.stringify(flightData);
         console.log(jsonStr)
 
-        const response = await fetch("/submit", {
+        const response = await fetch('/submit', {
             headers: {
                 "Content-type": "application/json"
             },
@@ -84,7 +100,7 @@ function Homepage() {
 
         const table = await response.json()
         console.log(typeof (table))
-        setResponseData(table)
+        setResponseData(Array.of(table))
     }
 
 

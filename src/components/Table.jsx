@@ -10,11 +10,9 @@ function Table(props) {
     const [editTarget, setEditTarget] = useState(null);
 
     //on render, try and parse incoming data from the submit post if data changed
-    useEffect(()=> {
-        if(props.data){
-            console.log( props.data);
-            //add all previous data and append new
-            setRows(prevRows => [...prevRows, props.data]);
+    useEffect(() => {
+        if (props.data && props.data.length > 0) {
+            setRows(prevRows => [...prevRows, ...props.data]);
         }
     }, [props.data]); // run everytime it changes
 
@@ -28,38 +26,56 @@ function Table(props) {
         setEditTarget(flightID);
         setShowModal(true);
     };
+    //trigger re render after editTarget is assigned
     useEffect(() => {
         console.log("editTarget:", editTarget);
-        console.log("showModal:", showModal);
-    }, [editTarget, showModal]);
+    }, [editTarget]);
 
     const handleModify = (id) => {
         //get the id from rows, open the modal
         const r = rows.find(row => row.flightID === id)
+        if (!r) return {}; // Ensure we don't return null or undefined
         return r;
-
+    }
+    const getUpdatedFlight = updatedFlight => {
+        //replaces the id that matched with the updated flight info
+        const absDays = Math.abs(updatedFlight.daysTil)
+        console.log(updatedFlight.daysTil)
+        let daysUntil;
+        if(updatedFlight.daysTil < 0){
+            daysUntil = `${absDays} day(s) ago`
+        } else {
+            daysUntil = `${absDays} day(s)`
+        }
+        const row = document.getElementById(`row-${updatedFlight.flightID}`);
+        if (row) { //check if the row hasnt been changed/error in indexing
+            const daysUntilElement = row.querySelector('.daysUntil');
+            if (daysUntilElement) {
+                daysUntilElement.textContent = daysUntil; // Update the text in the "daysUntil" column
+            }
+        }
+        setRows(prevRows => prevRows.map(row => row.flightID === updatedFlight.flightID ? updatedFlight : row));
     }
 
     const createRow = (row) => {
         //go use the parsed data and access
         let daysUntil;
         const absDays = Math.abs(row.daysTil)
-        if(absDays < 0){
+        if(rows.daysTil < 0){
             daysUntil = `${absDays} day(s) ago`
         } else {
             daysUntil = `${absDays} day(s)`
         }
 
-
         return (
-            <tr key={row.flightID} >
+            <tr id={`row-${row.flightID}`}>
                 <td>{row.flightType}</td>
                 <td>{row.names.join(", ")}</td>
                 <td>{row.cityDepart}</td>
                 <td>{row.cityDest}</td>
                 <td>{row.departDate}</td>
                 <td>{row.returnDate ? row.returnDate : "N/A"}</td>
-                <td>{daysUntil}</td>
+                <td className="daysUntil" >{daysUntil} </td> {/* Static Text, so maybe ok to access directly */}
                 <td>
                     <button className="modifyButton"  id={`mod-button-${row.flightID}`} onClick={() => handleEditClick(row.flightID)}> Edit
                     </button>
@@ -76,7 +92,7 @@ function Table(props) {
     const submitDelete = async function (index){
         console.log("Sending delete request for index:", index);
         const json = JSON.stringify({ flightIndex: index} )
-        const response = await fetch( "/delete", {
+        const response = await fetch( '/delete', {
             headers: {
                 "Content-type": "application/json"
             },
@@ -110,25 +126,26 @@ function Table(props) {
                 </thead>
                 <tbody id="flightTable" >
                     {
-                        rows.length > 0 ? rows.map((row) => (createRow(row))) : console.log("Empty")
+                        rows.length > 0 ? (rows.map((row) => (createRow(row)))) : console.log("Empty")
                     }
                 </tbody>
             </table>
         </section>
             {
-                showModal && editTarget &&
+                showModal &&
                 <Modal
                     showModal = {showModal}
                     close = {() => setShowModal(false)}
                     data = {handleModify(editTarget) || {}}
                     target = {editTarget}
+                    getUpdatedFlight = {getUpdatedFlight}
                 />
             }
         </>
     )
 }
 Table.propTypes = {
-    data: PropTypes.object.isRequired,  // Assuming 'data' is an array
+    data: PropTypes.array.isRequired,  // Assuming 'data' is an array
 };
 
 export default Table;

@@ -33,20 +33,23 @@ function Header() {
     return (
         <header>
             <div className="bg-[#7E4181] w-full font-sans">
-                <nav>
-                    <div>
-                        {
-                            loggedIn ? (
-                                <button className="py-2 px-4 bg-[#7E4181] text-white rounded-md" id="logout-button"  onClick={handleLogout}> Logout </button>
-                            ) : (
-                                <a href="/">
-                                    <button className="py-2 px-4 bg-[#7E4181] text-white rounded-md" id="login-button"> Login </button>
-                                </a>
-                            )
-                        }
-                    </div>
-                    <div>
-                        Hey, {username}!
+                <nav >
+                    <div  className={"flex justify-between items-center w-full "}>
+                        <div>
+                            {
+                                loggedIn ? (
+                                    <button className="py-2 px-4 bg-[#7E4181] text-white cursor-pointer" id="logout-button" onClick={handleLogout}> Logout </button>
+                                ) : (
+                                    <a href='/Login'>
+                                        <button className="py-2 px-4 bg-[#7E4181] text-white cursor-pointer " id="login-button"> Login </button>
+                                    </a>
+                                )
+                            }
+                        </div>
+                        <div className={`${loggedIn ? 'visible' : 'hidden'} text-white px-4 py-2`}>
+                            Hey, {username}!
+                        </div>
+
                     </div>
                 </nav>
             </div>

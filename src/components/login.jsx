@@ -1,14 +1,20 @@
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import '../index.css'
 import gitHubLogo from "../assets/github.svg";
 import CredContext from "./CredentialsContext.jsx";
 import {useNavigate} from "react-router-dom";
 
 function LoginPage() {
-    const {logIn} = useContext(CredContext)
+    const {logIn, loggedIn} = useContext(CredContext)
     const [credentials, setCredentials] = useState({username:'',password:''})
     const [loginError, setLoginError] = useState('')
     const navigate = useNavigate();
+    useEffect(() => {
+        if(loggedIn) {
+            navigate('/');
+        }
+    })
+
     const handleChange = (e) => {
         setCredentials({...credentials, [e.target.name] : e.target.value});
         console.log(credentials)
@@ -16,7 +22,7 @@ function LoginPage() {
     const submitLogin = async function () {
         console.log('login button clicked');
         let jsonBdy = JSON.stringify(credentials);
-        const response = await fetch( "/login", {
+        const response = await fetch( '/login', {
             headers: {
                 "Content-type": "application/json"
             },
@@ -27,7 +33,7 @@ function LoginPage() {
             console.log("login success");
             //since state update async I fink, use a function defined in context to update it instantly
             logIn(credentials.username)
-            navigate('/Home')
+            navigate('/')
         } else {
             //alert to say login failed
             const data = await response.json();
@@ -63,13 +69,13 @@ function LoginPage() {
                 </form>
 
                 <div className="mt-4 mb-4 text-center">
-                    <a href="/SignUp" id="switch-link"
+                    <a href='/SignUp' id="switch-link"
                        className="text-accent hover:text-button-hover hover:text-blue-400 text-sm">
                         Sign up to save your flights!
                     </a>
                 </div>
                 <div className="mt-4 mb-4 text-center">
-                    <a href="/auth/github" >
+                    <a href='/auth/github' >
                         <button className={ 'w-full py-2 bg-button bg-black text-white font-semibold border border-black rounded-md hover:bg-gray-900 hover:border-gray-900 cursor-pointer active:bg-gray-600'}>
                             <span className={"flex justify-center gap-2"}> <img src={gitHubLogo} alt={"GitHub_Logo"} width={"30px"} /> Login with GitHub </span>
                         </button>
@@ -78,7 +84,7 @@ function LoginPage() {
                 </div>
                 {
                     loginError && (
-                        <div className="w-full py-2 flex justify-center items-center bg-red-300 text-red-700 border border-red-950 rounded-md focus:outline-none focus:ring-2 focus:ring-red-800">
+                        <div className="w-full py-2 flex justify-center items-center bg-red-300 text-red-700 border border-red-800 rounded-md focus:outline-none focus:ring-2 focus:ring-red-800">
                             {loginError}
                         </div>
                     )

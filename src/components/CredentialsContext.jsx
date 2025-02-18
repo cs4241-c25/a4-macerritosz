@@ -22,7 +22,6 @@ export const CredentialsProvider = ({children}) => {
             } catch (e) {
                 console.log("Error getting user profile", e);
                 setLoggedIn(false);
-
             }
         }
         fetchUser();

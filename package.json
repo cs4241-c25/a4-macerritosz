@@ -9,9 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "server1": "node app.js",
-    "server2": "node appnew.js",
-    "chainBuild1": "vite build && node app.js",
-    "chainBuild2": "vite build && node appnew.js"
+    "chainBuild1": "vite build && node app.js"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.6",

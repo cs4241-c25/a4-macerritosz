@@ -1,5 +1,6 @@
 import {useContext, useState} from "react";
 import '../index.css'
+import gitHubLogo from "../assets/github.svg";
 import {useNavigate} from "react-router-dom";
 import CredContext from "./CredentialsContext.jsx";
 
@@ -13,7 +14,7 @@ function SignupPage() {
     }
     const submitSignup =  async function () {
         let jsonBdy = JSON.stringify(credentials);
-        const response = await fetch( "/signup", {
+        const response = await fetch( '/Signup', {
             headers: {
                 "Content-type": "application/json"
             },
@@ -23,10 +24,10 @@ function SignupPage() {
         if(response.ok){
             //automatically take you to page once you sign in
             logIn(credentials.username)
-            navigate('/Home')
+            navigate('/')
         } else {
-            const data = await response.json();
-            setLoginError(data.error || "Signup Failed.");
+            const data = await response.text();
+            setLoginError(data || "Signup Failed.");
         }
     }
 
@@ -58,14 +59,14 @@ function SignupPage() {
                     </button>
                 </form>
                 <div className="mt-4 mb-4 text-center">
-                    <a href="/SignUp" id="switch-link"
+                    <a href='/Login' id="switch-link"
                        className="text-accent hover:text-button-hover hover:text-blue-400 text-sm">
                         Login to view your flights!
                     </a>
                 </div>
 
                 <div className="mt-4 mb-4 text-center">
-                    <a href="/auth/github" >
+                    <a href='/auth/github' >
                         <button className={ 'w-full py-2 bg-button bg-black text-white font-semibold border border-black rounded-md hover:bg-gray-900 hover:border-gray-900 cursor-pointer active:bg-gray-600'}>
                             <span className={"flex justify-center gap-2"}> <img src={gitHubLogo} alt={"GitHub_Logo"} width={"30px"} /> Login with GitHub </span>
                         </button>
@@ -73,7 +74,7 @@ function SignupPage() {
                 </div>
                 {
                     loginError && (
-                        <div className="w-full py-2 flex justify-center items-center bg-red-300 text-red-700 border border-red-950 rounded-md focus:outline-none focus:ring-2 focus:ring-red-800">
+                        <div className="w-full py-2 flex justify-center items-center bg-red-300 text-red-700 border-2 border-red-800 rounded-md focus:outline-none focus:ring-2 focus:ring-red-800">
                             {loginError}
                         </div>
                     )
