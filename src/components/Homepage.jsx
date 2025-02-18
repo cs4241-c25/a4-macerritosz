@@ -1,10 +1,21 @@
-import {useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import '../index.css'
 import Table from "./Table.jsx";
+import {useNavigate} from "react-router-dom";
+import CredContext from "./CredentialsContext.jsx";
 
 function Homepage() {
-    //useState to pass information to
-
+    const {loggedIn, username} = useContext(CredContext)
+    /* Use state information to make sure that user is logged in, will change when user logs out */
+    const navigate = useNavigate();
+    //instead, use a get request to /profile to get the user
+    useEffect(() => {
+        if(loggedIn) {
+            navigate("/Home");
+        } else {
+            navigate("/");
+        }
+    }, [loggedIn]);
     /*
     Manage what is shown based on options:
      */
@@ -48,6 +59,7 @@ function Homepage() {
 
     const [flightData, setFlightData] = useState({flightType : "One-Way", names:[], cityDepart: '', cityDest: '', departDate: '', returnDate: ''})
     const [responseData, setResponseData] = useState(null);
+
     const handleChange = (e, index) => {
         if(e.target.name === "passGroup") {
             const names = [...flightData.names];
@@ -186,12 +198,15 @@ function Homepage() {
                                 </div>
                             </div>
                             <div className="flex justify-center">
-                                <button id="submit" className="py-2 px-6 bg-[#7E4181] text-white rounded-md" onClick={handleSubmit}> Submit </button>
+                                <button id="submit" className="py-2 px-6 bg-[#7E4181] text-white rounded-md  active:border-[#a16aa3] active:bg-[#a16aa3] cursor-pointer"
+                                        onClick={handleSubmit}> Submit
+                                </button>
                             </div>
                         </form>
                     </div>
                 </div>
-                {responseData && <Table data={responseData}/>}
+                {(responseData && username) && <Table data={responseData} />}
+
             </div>
         </section>
     )

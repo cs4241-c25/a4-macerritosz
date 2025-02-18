@@ -38,3 +38,21 @@ input[type="radio"] + label:before {
 input[type="radio"]:checked + label:before {
   background: #7E4181;
 }
+.deleteButton, .modifyButton{
+  border: none;
+  border-radius: 5px;
+  background: #7E4181;
+  color:white;
+  height: 1rem;
+  width: 5rem;
+  font-size: .75rem;
+  cursor:pointer;
+}
+.deleteButton:active, .modifyButton:active{
+  border-color: #a16aa3;
+  background: #a16aa3;
+}
+
+th, td {
+  text-align: center;
+}
