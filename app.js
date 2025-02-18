@@ -47,12 +47,14 @@ app.use(express.static(path.join(__dirname, 'dist')));
 
 
 async function connect() {
-    await client.connect().then(() => {console.log("Connected!")});
+    await client.connect().then(() => {
+        console.log("Connected!")
+    });
     flightCollection = await client.db(MONGO_DBNAME).collection(MONGO_DBCOLLECTION);
     let db = client.db(MONGO_DBNAME);
 
-    const checkExists = await db.listCollections({name:'loginData'}).toArray()
-    if(checkExists.length === 0){
+    const checkExists = await db.listCollections({name: 'loginData'}).toArray()
+    if (checkExists.length === 0) {
         await db.createCollection("loginData", {
             validator: {
                 $jsonSchema: {
@@ -74,13 +76,13 @@ async function connect() {
         })
         console.log("Successfully Creates user collection w/ schema validation")
     }
-    loginCollection= db.collection("loginData");
+    loginCollection = db.collection("loginData");
 }
+
 connect().then(() => {
     //when new user is connected, reset count for that user
     count = 0;
 });
-
 
 
 app.use(passport.authenticate('session'));
@@ -101,7 +103,9 @@ passport.use(new LocalStrategy(async function verify(username, password, cb) {
             return cb(null, false, {message: 'Incorrect username or password'});
         }
     } catch (err) {
-        if (err) { return cb(err); }
+        if (err) {
+            return cb(err);
+        }
     }
 }));
 //Github strategy to allow for auth through account
@@ -110,7 +114,7 @@ passport.use(new GitHubStrategy({
         clientSecret: GITHUB_CLIENT_SECRET,
         callbackURL: "http://34.226.142.114:3000/auth/github/callback"
     },
-    async function(accessToken, refreshToken, profile, done) {
+    async function (accessToken, refreshToken, profile, done) {
         process.nextTick(function () {
             return done(null, profile);
         });
@@ -118,8 +122,8 @@ passport.use(new GitHubStrategy({
 ));
 
 // Serializing user into session
-passport.serializeUser(function(user, done) {
-    process.nextTick(function() {
+passport.serializeUser(function (user, done) {
+    process.nextTick(function () {
         return done(null, {
             id: user.id,
             username: user.username
@@ -127,8 +131,8 @@ passport.serializeUser(function(user, done) {
     });
 });
 
-passport.deserializeUser(function(user, done) {
-    process.nextTick(function() {
+passport.deserializeUser(function (user, done) {
+    process.nextTick(function () {
         return done(null, user);
     });
 });
@@ -136,7 +140,7 @@ passport.deserializeUser(function(user, done) {
 /* Login, SignUp, Logout */
 
 //login local strategy
-app.post('/login', function (req,res,next) {
+app.post('/login', function (req, res, next) {
     passport.authenticate('local', function (error, user) {
         if (error) {
             console.error('Authentication error:', error);
@@ -147,7 +151,7 @@ app.post('/login', function (req,res,next) {
             return res.status(401).json({error: 'Incorrect username or password.'});
         }
 
-        req.login(user,function(err) {
+        req.login(user, function (err) {
             if (err) {
                 console.error('Session error:', err)
                 return next(err);
@@ -155,17 +159,17 @@ app.post('/login', function (req,res,next) {
             return res.status(200).json({success: "Login successful"});
         });
 
-    })(req,res,next)
+    })(req, res, next)
 });
 //login github Strategy
 app.get('/auth/github/callback',
-    passport.authenticate('github', { session: true, failureRedirect: '/Login' }),
+    passport.authenticate('github', {session: true, failureRedirect: '/Login'}),
     function (req, res) {
         // Successful authentication, redirect home.
         res.redirect('/');
     });
 
-app.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
+app.get('/auth/github', passport.authenticate('github', {scope: ['user:email']}));
 
 //Normal Signup path -> check user against db [y] -> redir to home, [n} -> send error
 app.post('/Signup', async function (req, res) {
@@ -175,7 +179,7 @@ app.post('/Signup', async function (req, res) {
     const loginExists = await loginCollection.findOne({
         username: req.body.username
     })
-    if(loginExists) {
+    if (loginExists) {
         console.log("Could not create signup");
         return res.status(400).send("User already exists");
     } else {
@@ -186,7 +190,7 @@ app.post('/Signup', async function (req, res) {
 })
 // Handles ALL logout Req
 app.post('/logout', function (req, res) {
-    req.logout(function(err) {
+    req.logout(function (err) {
         if (err) {
             console.error('Error during logout:', err);
             return res.status(500).send('Error logging out.');
@@ -197,10 +201,10 @@ app.post('/logout', function (req, res) {
 
 //allow client side to get the username
 app.get('/profile', (req, res) => {
-    if(req.isAuthenticated()){
-        res.json({username:req.user.username});
+    if (req.isAuthenticated()) {
+        res.json({username: req.user.username});
     } else {
-        res.status(401).json({ error: 'Unauthorized' });
+        res.status(401).json({error: 'Unauthorized'});
     }
 });
 
@@ -212,13 +216,13 @@ app.post('/submit', async function (req, res) {
     req.body.daysTil = checkDaysTil(req.body);
 
     //When passed in from submit, body is appended to a username and ID, whcih is kept track of by a user, ID will not be used twice for  user, even if deleted
-    const mergedJSON = {...{username:req.user.username}, ...{flightID : count},...req.body}
+    const mergedJSON = {...{username: req.user.username}, ...{flightID: count}, ...req.body}
     count++;
 
     await flightCollection.insertOne(mergedJSON, (err) => {
-        if(err){
+        if (err) {
             res.send('Error');
-        } else  {
+        } else {
             res.send('success');
         }
     })
@@ -245,7 +249,7 @@ app.delete('/delete', async function (req, res) {
 
         // Check if a document was actually deleted
         if (deleteRequest.deletedCount > 0) {
-            res.json({result:"success"});
+            res.json({result: "success"});
         } else {
             console.log("Could not delete flight");
             res.status(404).json({result: 'Not Found'});
@@ -257,7 +261,7 @@ app.delete('/delete', async function (req, res) {
 })
 
 app.post(`/modifyFlightData/:flightID`, async function (req, res) {
-    try{
+    try {
         if (!req.isAuthenticated()) {
             return res.status(401).send('User not authenticated');
         }
@@ -265,12 +269,12 @@ app.post(`/modifyFlightData/:flightID`, async function (req, res) {
         //if departDate changed so will daysTil
         req.body.daysTil = checkDaysTil(req.body);
 
-        const { cityDepart, cityDest, departDate, returnDate, daysTil } = req.body;
+        const {cityDepart, cityDest, departDate, returnDate, daysTil} = req.body;
         const flightID = Number(req.params.flightID);
 
         const updatedFlight = await flightCollection.updateOne(
-            { username: req.user.username, flightID: flightID },
-            { $set: { cityDepart, cityDest, departDate, returnDate, daysTil } }
+            {username: req.user.username, flightID: flightID},
+            {$set: {cityDepart, cityDest, departDate, returnDate, daysTil}}
         );
 
 
@@ -281,7 +285,7 @@ app.post(`/modifyFlightData/:flightID`, async function (req, res) {
                 username: req.user.username,
                 flightID: flightID
             });
-            if(!findUpdated){
+            if (!findUpdated) {
                 return res.status(404).send("Flight not found after update");
             } else {
                 res.json(findUpdated)
@@ -289,7 +293,7 @@ app.post(`/modifyFlightData/:flightID`, async function (req, res) {
         }
 
 
-    } catch (err){
+    } catch (err) {
         console.log('Error updating flight', err)
         res.status(500).send('Error updating flight');
     }
@@ -300,8 +304,8 @@ app.get('/getAllFlights', async (req, res) => {
         return res.status(401).send('User not authenticated');
     }
     try {
-        const flights = await flightCollection.find({ username: req.user.username }).toArray();
-        if(count === 0) {
+        const flights = await flightCollection.find({username: req.user.username}).toArray();
+        if (count === 0) {
             count += flights.length
         }
         //send as array of objects as json
@@ -325,7 +329,7 @@ const formatDate = (date) => {
 
 function checkDaysTil(dataString) {
     //from string to something Date object can process, take out '-'
-    const depart = dataString.departDate.replace(/-/g,'/');
+    const depart = dataString.departDate.replace(/-/g, '/');
     const departDate = new Date(depart);
 
     const currentDate = new Date();
@@ -335,7 +339,7 @@ function checkDaysTil(dataString) {
     return Math.ceil((departDate - today) / (1000 * 60 * 60 * 24));
 }
 
-app.get('/*', function(req, res) {
+app.get('/*', function (req, res) {
     res.sendFile(path.join(__dirname, 'dist', '/index.html'));
 });
 

@@ -16,7 +16,7 @@ function Table(props) {
         }
     }, [props.data]); // run everytime it changes
 
-    const handleDelete = (id)=> {
+    const handleDelete = (id) => {
         //get all the previous rows, and filter for given id, taking everything but that row
         //re-renders page to show the rows now
         setRows(prevRows => (prevRows.filter(row => row.flightID !== id)))
@@ -42,7 +42,7 @@ function Table(props) {
         const absDays = Math.abs(updatedFlight.daysTil)
         console.log(updatedFlight.daysTil)
         let daysUntil;
-        if(updatedFlight.daysTil < 0){
+        if (updatedFlight.daysTil < 0) {
             daysUntil = `${absDays} day(s) ago`
         } else {
             daysUntil = `${absDays} day(s)`
@@ -61,7 +61,7 @@ function Table(props) {
         //go use the parsed data and access
         let daysUntil;
         const absDays = Math.abs(row.daysTil)
-        if(rows.daysTil < 0){
+        if (rows.daysTil < 0) {
             daysUntil = `${absDays} day(s) ago`
         } else {
             daysUntil = `${absDays} day(s)`
@@ -75,13 +75,16 @@ function Table(props) {
                 <td>{row.cityDest}</td>
                 <td>{row.departDate}</td>
                 <td>{row.returnDate ? row.returnDate : "N/A"}</td>
-                <td className="daysUntil" >{daysUntil} </td> {/* Static Text, so maybe ok to access directly */}
+                <td className="daysUntil">{daysUntil} </td>
+                {/* Static Text, so maybe ok to access directly */}
                 <td>
-                    <button className="modifyButton"  id={`mod-button-${row.flightID}`} onClick={() => handleEditClick(row.flightID)}> Edit
+                    <button className="modifyButton" id={`mod-button-${row.flightID}`}
+                            onClick={() => handleEditClick(row.flightID)}> Edit
                     </button>
                 </td>
                 <td>
-                    <button className="deleteButton" id={`Button-${row.flightID}`} onClick={() => submitDelete(row.flightID)}>
+                    <button className="deleteButton" id={`Button-${row.flightID}`}
+                            onClick={() => submitDelete(row.flightID)}>
                         Delete
                     </button>
                 </td>
@@ -89,10 +92,10 @@ function Table(props) {
         )
     }
 
-    const submitDelete = async function (index){
+    const submitDelete = async function (index) {
         console.log("Sending delete request for index:", index);
-        const json = JSON.stringify({ flightIndex: index} )
-        const response = await fetch( '/delete', {
+        const json = JSON.stringify({flightIndex: index})
+        const response = await fetch('/delete', {
             headers: {
                 "Content-type": "application/json"
             },
@@ -101,7 +104,7 @@ function Table(props) {
         })
         const result = await response.json();
         console.log(result)
-        if(result.result === "success") {
+        if (result.result === "success") {
             handleDelete(index);
         }
     }
@@ -109,41 +112,42 @@ function Table(props) {
 
     return (
         <>
-        <section className="p-4">
-            <table className="w-full text-align-center">
-                <thead>
-                <tr>
-                    <th className="underline decoration-[#7E4181] decoration-2">Flight Type</th>
-                    <th className="underline decoration-[#7E4181] decoration-2">Passenger List</th>
-                    <th className="underline decoration-[#7E4181] decoration-2">Depart City</th>
-                    <th className="underline decoration-[#7E4181] decoration-2">Destination City</th>
-                    <th className="underline decoration-[#7E4181] decoration-2">Depart Date</th>
-                    <th className="underline decoration-[#7E4181] decoration-2">Return Date</th>
-                    <th className="underline decoration-[#7E4181] decoration-2">Day(s) until Departure</th>
-                    <th className="underline decoration-[#7E4181] decoration-2">Modify Flight</th>
-                    <th className="underline decoration-[#7E4181] decoration-2">Delete Flight</th>
-                </tr>
-                </thead>
-                <tbody id="flightTable" >
+            <section className="p-4">
+                <table className="w-full text-align-center">
+                    <thead>
+                    <tr>
+                        <th className="underline decoration-[#7E4181] decoration-2">Flight Type</th>
+                        <th className="underline decoration-[#7E4181] decoration-2">Passenger List</th>
+                        <th className="underline decoration-[#7E4181] decoration-2">Depart City</th>
+                        <th className="underline decoration-[#7E4181] decoration-2">Destination City</th>
+                        <th className="underline decoration-[#7E4181] decoration-2">Depart Date</th>
+                        <th className="underline decoration-[#7E4181] decoration-2">Return Date</th>
+                        <th className="underline decoration-[#7E4181] decoration-2">Day(s) until Departure</th>
+                        <th className="underline decoration-[#7E4181] decoration-2">Modify Flight</th>
+                        <th className="underline decoration-[#7E4181] decoration-2">Delete Flight</th>
+                    </tr>
+                    </thead>
+                    <tbody id="flightTable">
                     {
                         rows.length > 0 ? (rows.map((row) => (createRow(row)))) : console.log("setRows is Empty")
                     }
-                </tbody>
-            </table>
-        </section>
+                    </tbody>
+                </table>
+            </section>
             {
                 showModal &&
                 <Modal
-                    showModal = {showModal}
-                    close = {() => setShowModal(false)}
-                    data = {handleModify(editTarget) || {}}
-                    target = {editTarget}
-                    getUpdatedFlight = {getUpdatedFlight}
+                    showModal={showModal}
+                    close={() => setShowModal(false)}
+                    data={handleModify(editTarget) || {}}
+                    target={editTarget}
+                    getUpdatedFlight={getUpdatedFlight}
                 />
             }
         </>
     )
 }
+
 Table.propTypes = {
     data: PropTypes.array.isRequired,  // Assuming 'data' is an array
 };

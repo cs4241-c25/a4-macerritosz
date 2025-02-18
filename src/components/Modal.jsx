@@ -3,7 +3,6 @@ import '../index.css'
 import PropTypes from "prop-types";
 
 
-
 function Modal(props) {
     console.log(props);
     /*
@@ -28,7 +27,7 @@ function Modal(props) {
         setInput((prev) => ({...prev, [name]: value}));
     }
 
-    async function modifyData(event){
+    async function modifyData(event) {
         event.preventDefault();
         console.log(input)
 
@@ -59,9 +58,9 @@ function Modal(props) {
         <div id="modifyModal" className={`modal fixed inset-0 bg-white/65 pt-16 
         ${props.showModal ? 'block' : 'hidden'} z-50`}>
             <div className="modal-content bg-white m-10 p-5 border border-transparent w-4/5 mx-auto">
-                <span className="close cursor-pointer m-2" id="closeModal" onClick={props.close} >X</span>
+                <span className="close cursor-pointer m-2" id="closeModal" onClick={props.close}>X</span>
                 <h3 className={"pt-1 pb-1"}>Modify Flight: </h3>
-                <form id="modifyForm" >
+                <form id="modifyForm">
                     <div className={"flex"}>
                         <label htmlFor="modalCityDepart">
                             Departure City: <input type="text"
@@ -83,7 +82,7 @@ function Modal(props) {
                     </div>
                     <br/>
                     <div className={"flex"}>
-                        <label htmlFor="modalDepartDate" >
+                        <label htmlFor="modalDepartDate">
                             Departure Date: <input type="date" id="modalDepartDate" name="departDate"
                                                    value={input.departDate}
                                                    onChange={handleChange}
@@ -91,7 +90,8 @@ function Modal(props) {
                         />
                         </label>
 
-                        <label id="modalReturnDateLabel" htmlFor="modalReturnDate" className={`pl-2 ${props.data.returnDate !== "" ? 'visible' : 'hidden'}`}>
+                        <label id="modalReturnDateLabel" htmlFor="modalReturnDate"
+                               className={`pl-2 ${props.data.returnDate !== "" ? 'visible' : 'hidden'}`}>
                             Return Date: <input type="date" id="modalReturnDate" name="returnDate"
                                                 value={input.returnDate}
                                                 onChange={handleChange}
@@ -113,6 +113,7 @@ function Modal(props) {
         </div>
     )
 }
+
 Modal.propTypes = {
     showModal: PropTypes.bool.isRequired,
     close: PropTypes.func.isRequired,

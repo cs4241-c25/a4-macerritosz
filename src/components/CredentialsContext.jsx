@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from 'react';
+import {createContext, useEffect, useState} from 'react';
 
 const CredContext = createContext();
 
@@ -11,7 +11,7 @@ export const CredentialsProvider = ({children}) => {
         const fetchUser = async () => {
             try {
                 const response = await fetch('/profile');
-                if(response.ok) {
+                if (response.ok) {
                     const data = await response.json();
                     setUsername(data.username);
                     setLoggedIn(true);

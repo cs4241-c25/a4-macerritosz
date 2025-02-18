@@ -33,15 +33,18 @@ function Header() {
     return (
         <header>
             <div className="bg-[#7E4181] w-full font-sans">
-                <nav >
-                    <div  className={"flex justify-between items-center w-full "}>
+                <nav>
+                    <div className={"flex justify-between items-center w-full "}>
                         <div>
                             {
                                 loggedIn ? (
-                                    <button className="py-2 px-4 bg-[#7E4181] text-white cursor-pointer" id="logout-button" onClick={handleLogout}> Logout </button>
+                                    <button className="py-2 px-4 bg-[#7E4181] text-white cursor-pointer"
+                                            id="logout-button" onClick={handleLogout}> Logout </button>
                                 ) : (
                                     <a href='/Login'>
-                                        <button className="py-2 px-4 bg-[#7E4181] text-white cursor-pointer " id="login-button"> Login </button>
+                                        <button className="py-2 px-4 bg-[#7E4181] text-white cursor-pointer "
+                                                id="login-button"> Login
+                                        </button>
                                     </a>
                                 )
                             }
@@ -56,4 +59,5 @@ function Header() {
         </header>
     )
 }
+
 export default Header;
