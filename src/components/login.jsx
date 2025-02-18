@@ -9,6 +9,7 @@ function LoginPage() {
     const [credentials, setCredentials] = useState({username:'',password:''})
     const [loginError, setLoginError] = useState('')
     const navigate = useNavigate();
+
     useEffect(() => {
         if(loggedIn) {
             navigate('/');

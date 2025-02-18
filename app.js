@@ -108,7 +108,7 @@ passport.use(new LocalStrategy(async function verify(username, password, cb) {
 passport.use(new GitHubStrategy({
         clientID: GITHUB_CLIENT_ID,
         clientSecret: GITHUB_CLIENT_SECRET,
-        callbackURL: "http://localhost:3000/auth/github/callback"
+        callbackURL: "http://34.226.142.114:3000/auth/github/callback"
     },
     async function(accessToken, refreshToken, profile, done) {
         process.nextTick(function () {
@@ -335,7 +335,7 @@ function checkDaysTil(dataString) {
     return Math.ceil((departDate - today) / (1000 * 60 * 60 * 24));
 }
 
-app.get('*', function(req, res) {
+app.get('/*', function(req, res) {
     res.sendFile(path.join(__dirname, 'dist', '/index.html'));
 });
 
